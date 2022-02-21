@@ -56,7 +56,7 @@ public class Controller {
             StringBuilder stringBuffer = new StringBuilder(gameID);
             gameID = stringBuffer.deleteCharAt(gameID.length() - 1).toString();
             json =
-                    mapper.writeValueAsString(gameList.get(gameList.indexOf(new Game(gameID))).getTriangles()[i]);
+                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gameList.get(gameList.indexOf(new Game(gameID))).getTriangles()[i]);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

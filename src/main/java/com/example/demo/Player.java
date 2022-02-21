@@ -1,15 +1,22 @@
 package com.example.demo;
 
-abstract public class Player {
+import java.io.Serializable;
+
+abstract public class Player implements Serializable {
     protected int eaten;
     protected int color;
-    protected Dice dice;
     protected boolean canPlay;
-    protected Game game;
+    //protected Game game;
+    protected String gameID;
 
-    Player(int color, Dice dice, Game game) {
-        this.dice = dice;
-        this.game = game;
+    Player(int eaten, int color,String gameID) {
+        this.eaten = eaten;
+        this.color = color;
+        this.gameID =gameID;
+    }
+
+    Player(int color, String game) {
+        this.gameID = game;
         canPlay = false;
         if (color == Triangle.BROWN || color == Triangle.WHITE) {
             this.color = color;
@@ -24,6 +31,29 @@ abstract public class Player {
 
     public int getColor() {
         return color;
+    }
+
+    public void setCanPlay(boolean canPlay) {
+        this.canPlay = canPlay;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+
+
+    public void setEaten(int eaten) {
+        this.eaten = eaten;
+    }
+
+    public void setGameID(String gameID) {
+        this.gameID = gameID;
+    }
+
+
+    public String getGameID() {
+        return gameID;
     }
 
     public void decreaseEaten() {

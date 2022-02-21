@@ -1,18 +1,22 @@
 package com.example.demo;
 
 public class BrownPlayer extends Player {
-    BrownPlayer(int color, Dice dice, Game game) {
-        super(color, dice, game);
+    BrownPlayer(int color, String game) {
+        super(color, game);
+    }
+
+    BrownPlayer(int eaten, int color, String gameID) {
+        super(eaten, color, gameID);
     }
 
     @Override
     protected int delta(int f, int t) {
-        return t-f;
+        return t - f;
     }
 
     @Override
     protected int delta(int t) {
-        return t+1;
+        return t + 1;
     }
 
     @Override

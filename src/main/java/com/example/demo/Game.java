@@ -18,7 +18,7 @@ public class Game {
     }
 
     public void setBrownPlayer() {
-        this.brownPlayer = new BrownPlayer(Triangle.BROWN, currentDice, this);
+        this.brownPlayer = new BrownPlayer(Triangle.BROWN, this.gameID);
         if (whitePlayer != null) {
             initializeTriangles();
         }
@@ -29,7 +29,7 @@ public class Game {
     }
 
     public void setWhitePlayer() {
-        this.whitePlayer = new WhitePlayer(Triangle.WHITE, currentDice, this);
+        this.whitePlayer = new WhitePlayer(Triangle.WHITE, this.gameID);
         if (brownPlayer != null) {
             initializeTriangles();
         }

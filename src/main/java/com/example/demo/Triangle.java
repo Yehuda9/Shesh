@@ -18,6 +18,11 @@ public class Triangle implements Serializable {
     private int colorOfPolygon;
 
 
+    Triangle(Player colorOfCoins, int numOfCoins, int colorOfPolygon) {
+        this.colorOfCoins = colorOfCoins;
+        this.numOfCoins = numOfCoins;
+        this.colorOfPolygon = colorOfPolygon;
+    }
 
     Triangle(int colorOfPolygon, Player colorOfCoins) {
         if (colorOfPolygon == RED || colorOfPolygon == BLACK) {
@@ -26,6 +31,10 @@ public class Triangle implements Serializable {
             throw new RuntimeException("error");
         }
         this.colorOfCoins = colorOfCoins;
+    }
+
+    public void setColorOfPolygon(int colorOfPolygon) {
+        this.colorOfPolygon = colorOfPolygon;
     }
 
     public void setNumOfCoins(int numOfCoins) {
@@ -42,6 +51,10 @@ public class Triangle implements Serializable {
 
     public void setColorOfCoins(Player colorOfCoins) {
         this.colorOfCoins = colorOfCoins;
+    }
+
+    public int getColorOfPolygon() {
+        return colorOfPolygon;
     }
 
     public void decreaseCoins() {
