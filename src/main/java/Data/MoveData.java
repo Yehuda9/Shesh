@@ -1,4 +1,4 @@
-package com.example.demo;
+package Data;
 
 public class MoveData {
     private String from;

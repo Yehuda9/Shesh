@@ -1,9 +1,8 @@
-package com.example.demo;
-
+package Data;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Triangle implements Serializable {
     public static final int BROWN = 0;
@@ -11,20 +10,16 @@ public class Triangle implements Serializable {
     public static final int RED = 2;
     public static final int BLACK = 3;
     @JsonProperty("colorOfCoins")
-    private Player colorOfCoins;
+    private int colorOfCoins;
     @JsonProperty("numOfCoins")
     private int numOfCoins;
     @JsonProperty("colorOfPolygon")
     private int colorOfPolygon;
 
 
-    Triangle(Player colorOfCoins, int numOfCoins, int colorOfPolygon) {
-        this.colorOfCoins = colorOfCoins;
-        this.numOfCoins = numOfCoins;
-        this.colorOfPolygon = colorOfPolygon;
-    }
-
-    Triangle(int colorOfPolygon, Player colorOfCoins) {
+    Triangle(){}
+    Triangle(int colorOfCoins, int numOfCoins, int colorOfPolygon) {
+        this.numOfCoins=numOfCoins;
         if (colorOfPolygon == RED || colorOfPolygon == BLACK) {
             this.colorOfPolygon = colorOfPolygon;
         } else {
@@ -41,7 +36,7 @@ public class Triangle implements Serializable {
         this.numOfCoins = numOfCoins;
     }
 
-    public Player getColorOfCoins() {
+    public int getColorOfCoins() {
         return colorOfCoins;
     }
 
@@ -49,7 +44,7 @@ public class Triangle implements Serializable {
         return numOfCoins;
     }
 
-    public void setColorOfCoins(Player colorOfCoins) {
+    public void setColorOfCoins(int colorOfCoins) {
         this.colorOfCoins = colorOfCoins;
     }
 
@@ -57,14 +52,27 @@ public class Triangle implements Serializable {
         return colorOfPolygon;
     }
 
-    public void decreaseCoins() {
-        this.numOfCoins--;
-        if (numOfCoins <= 0) {
-            colorOfCoins = null;
-        }
+    @Override
+    public String toString() {
+        return "Triangle{" +
+                "colorOfCoins=" + colorOfCoins +
+                ", numOfCoins=" + numOfCoins +
+                ", colorOfPolygon=" + colorOfPolygon +
+                '}';
     }
 
-    public void increaseCoins() {
-        this.numOfCoins++;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Triangle triangle = (Triangle) o;
+        return colorOfCoins == triangle.colorOfCoins && numOfCoins == triangle.numOfCoins && colorOfPolygon == triangle.colorOfPolygon;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(colorOfCoins, numOfCoins, colorOfPolygon);
     }
 }

@@ -1,24 +1,36 @@
-package com.example.demo;
+package Data;
+
+import Services.BrownPlayerService;
+import Services.PlayerService;
+import Services.TriangleService;
+import Services.WhitePlayerService;
 
 import java.util.*;
 
 public class Game {
-    public BrownPlayer brownPlayer;
-    public WhitePlayer whitePlayer;
-    private final Random random = new Random();
+    public Player brownPlayer;
+    public Player whitePlayer;
     private final Triangle[] triangles = new Triangle[24];
     private final Dice currentDice = new Dice();
     private Player currentPlayerTurn;
     private final String gameID;
+    TriangleService triangleService;
+    PlayerService whitePlayerService;
+    PlayerService brownPlayerService;
+    PlayerService playerService;
+
 
     Game(String id) {
         this.gameID = id;
         brownPlayer = null;
         whitePlayer = null;
+        this.triangleService = new TriangleService();
+        this.whitePlayerService = new WhitePlayerService();
+        this.brownPlayerService = new BrownPlayerService();
     }
 
     public void setBrownPlayer() {
-        this.brownPlayer = new BrownPlayer(Triangle.BROWN, this.gameID);
+        this.brownPlayer = new Player(0, Triangle.BROWN, this.gameID);
         if (whitePlayer != null) {
             initializeTriangles();
         }
@@ -29,7 +41,7 @@ public class Game {
     }
 
     public void setWhitePlayer() {
-        this.whitePlayer = new WhitePlayer(Triangle.WHITE, this.gameID);
+        this.whitePlayer = new Player(0, Triangle.WHITE, this.gameID);
         if (brownPlayer != null) {
             initializeTriangles();
         }
@@ -37,15 +49,11 @@ public class Game {
 
     private void initializeTriangles() {
         final int delta = 800 / 12;
-        int x = delta / 2;
         for (int i = 0; i < 12; i++) {
-            this.triangles[i] = new Triangle(i % 2 == 0 ? Triangle.RED : Triangle.BLACK, getInitColorOfCoins(i));
-            x += delta;
+            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK);
         }
-        x -= delta;
         for (int i = 12; i < 24; i++) {
-            this.triangles[i] = new Triangle(i % 2 == 0 ? Triangle.RED : Triangle.BLACK, getInitColorOfCoins(i));
-            x -= delta;
+            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK);
         }
         this.triangles[0].setNumOfCoins(2);
         this.triangles[5].setNumOfCoins(5);
@@ -58,19 +66,19 @@ public class Game {
 
     }
 
-    private Player getInitColorOfCoins(int i) {
+    private int getInitColorOfCoins(int i) {
         return switch (i) {
-            case 0, 11, 16, 18 -> this.brownPlayer;
-            case 5, 7, 12, 23 -> this.whitePlayer;
-            default -> null;
+            case 0, 11, 16, 18 -> Triangle.BROWN;
+            case 5, 7, 12, 23 -> Triangle.WHITE;
+            default -> -1;
         };
     }
 
-    public BrownPlayer getBrownPlayer() {
+    public Player getBrownPlayer() {
         return brownPlayer;
     }
 
-    public WhitePlayer getWhitePlayer() {
+    public Player getWhitePlayer() {
         return whitePlayer;
     }
 
@@ -103,31 +111,32 @@ public class Game {
 
     private boolean isValidMoveForComeBack(String from, int to) {
         if (currentPlayerTurn.getEaten() > 0 &&
-                from.equals(currentPlayerTurn.eatenName()) &&
-                (triangles[to].getColorOfCoins() == currentPlayerTurn || triangles[to].getNumOfCoins() <= 1)) {
+                from.equals(playerService.eatenName()) &&
+                (triangles[to].getColorOfCoins() == currentPlayerTurn.getColor() || triangles[to].getNumOfCoins() <= 1)) {
             return true;
         }
         return false;
     }
 
     private boolean isValidMove(int from, int to) {
-        if (currentPlayerTurn == triangles[from].getColorOfCoins()
+        if (currentPlayerTurn.getColor() == triangles[from].getColorOfCoins()
                 && (triangles[from].getNumOfCoins() > 0) && (triangles[to].getNumOfCoins() <= 1 ||
-                triangles[to].getColorOfCoins() == currentPlayerTurn)) {
-            int d = currentPlayerTurn.delta(from, to);
+                triangles[to].getColorOfCoins() == currentPlayerTurn.getColor())) {
+            int d = playerService.delta(from, to);
+
             return Arrays.stream(currentDice.getCurrentDice()).anyMatch(value -> value == d) || currentDice.isValidDelta(d);
         }
         return false;
     }
 
     private void makeEat(int to) {
-        triangles[to].decreaseCoins();
+        triangleService.decreaseCoins(triangles[to]);
         if (currentPlayerTurn == brownPlayer) {
-            whitePlayer.increaseEaten();
-            triangles[to].setColorOfCoins(brownPlayer);
+            playerService.increaseEaten(whitePlayer);
+            triangles[to].setColorOfCoins(brownPlayer.getColor());
         } else if (currentPlayerTurn == whitePlayer) {
-            brownPlayer.increaseEaten();
-            triangles[to].setColorOfCoins(whitePlayer);
+            playerService.increaseEaten(whitePlayer);
+            triangles[to].setColorOfCoins(whitePlayer.getColor());
         }
     }
 
@@ -137,20 +146,20 @@ public class Game {
         }
         String from = moveData.getFrom();
         int to = moveData.getTo();
-        if (triangles[to].getNumOfCoins() == 1 && triangles[to].getColorOfCoins() != currentPlayerTurn) {
+        if (triangles[to].getNumOfCoins() == 1 && triangles[to].getColorOfCoins() != currentPlayerTurn.getColor()) {
             makeEat(to);
         }
         try {
             int f = Integer.parseInt(from);
             triangles[to].setColorOfCoins(triangles[f].getColorOfCoins());
-            triangles[f].decreaseCoins();
-            triangles[to].increaseCoins();
-            moveDone(currentPlayerTurn.delta(f, to));
+            triangleService.decreaseCoins(triangles[f]);
+            triangleService.increaseCoins(triangles[to]);
+            moveDone(playerService.delta(f, to));
         } catch (Exception e) {
-            triangles[to].setColorOfCoins(currentPlayerTurn);
-            triangles[to].increaseCoins();
-            currentPlayerTurn.decreaseEaten();
-            moveDone(currentPlayerTurn.delta(to));
+            triangles[to].setColorOfCoins(currentPlayerTurn.getColor());
+            triangleService.increaseCoins(triangles[to]);
+            playerService.decreaseEaten(currentPlayerTurn);
+            moveDone(playerService.delta(to));
         }
     }
 
@@ -183,6 +192,7 @@ public class Game {
 
     public void turnDone() {
         currentPlayerTurn = currentPlayerTurn == brownPlayer ? whitePlayer : brownPlayer;
+        playerService = playerService == brownPlayerService ? whitePlayerService : brownPlayerService;
         currentDice.setCurrentDice();
     }
 
