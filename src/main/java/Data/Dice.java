@@ -1,10 +1,15 @@
 package Data;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Dice {
     private int[] currentDice;
     private final Random random = new Random();
+
+    Dice() {
+        setCurrentDice();
+    }
 
     void setCurrentDice() {
         this.currentDice = new int[]{Math.abs(random.nextInt() % 6) + 1, Math.abs(random.nextInt() % 6) + 1, 0, 0};
@@ -17,6 +22,7 @@ public class Dice {
     public int[] getCurrentDice() {
         return currentDice;
     }
+
     public boolean isValidDelta(int d) {
         int i = 0;
         int sum = 0;
@@ -28,5 +34,12 @@ public class Dice {
             i++;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Dice{" +
+                "currentDice=" + Arrays.toString(currentDice) +
+                '}';
     }
 }

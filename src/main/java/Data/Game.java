@@ -33,7 +33,9 @@ public class Game {
         this.brownPlayer = new Player(0, Triangle.BROWN, this.gameID);
         if (whitePlayer != null) {
             initializeTriangles();
+            return;
         }
+        this.currentPlayerTurn=brownPlayer;
     }
 
     public String getGameID() {
@@ -44,7 +46,9 @@ public class Game {
         this.whitePlayer = new Player(0, Triangle.WHITE, this.gameID);
         if (brownPlayer != null) {
             initializeTriangles();
+            return;
         }
+        this.currentPlayerTurn=whitePlayer;
     }
 
     private void initializeTriangles() {
@@ -104,7 +108,7 @@ public class Game {
         }
         try {
             return isValidMove(Integer.parseInt(from), to);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return isValidMoveForComeBack(from, to);
         }
     }

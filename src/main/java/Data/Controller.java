@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,13 +40,13 @@ public class Controller {
     }
 
     @GetMapping("getEatenBrownCoins")
-    public String getEatenBrownCoins(@RequestParam(value = "gameID") int gameID) {
-        return String.valueOf(gameList.get(gameID).getBrownPlayer().getEaten());
+    public String getEatenBrownCoins(@RequestParam(value = "gameID") String gameID) {
+        return String.valueOf(gameList.get(gameList.indexOf(new Game(gameID))).getBrownPlayer().getEaten());
     }
 
     @GetMapping("getEatenWhiteCoins")
-    public String getEatenWhiteCoins(@RequestParam(value = "gameID") int gameID) {
-        return String.valueOf(gameList.get(gameID).getWhitePlayer().getEaten());
+    public String getEatenWhiteCoins(@RequestParam(value = "gameID") String gameID) {
+        return String.valueOf(gameList.get(gameList.indexOf(new Game(gameID))).getWhitePlayer().getEaten());
     }
 
     @GetMapping("/triangle")
@@ -64,11 +65,12 @@ public class Controller {
     }
 
     @GetMapping("pour")
-    public String getCurrentDice(@RequestParam(value = "gameID") int gameID) {
+    public String getCurrentDice(@RequestParam(value = "gameID") String gameID) {
         ObjectMapper mapper = new ObjectMapper();
         String json = null;
         try {
-            json = mapper.writeValueAsString(gameList.get(gameID).getCurrentDice());
+            json =
+                    mapper.writeValueAsString(gameList.get(gameList.indexOf(new Game(gameID))).getCurrentDice().getCurrentDice());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -76,11 +78,11 @@ public class Controller {
     }
 
     @GetMapping("/currentPlayer")
-    public String getCurrentPlayer(@RequestParam(value = "gameID") int gameID) {
+    public String getCurrentPlayer(@RequestParam(value = "gameID") String gameID) {
         ObjectMapper mapper = new ObjectMapper();
         String json = null;
         try {
-            json = mapper.writeValueAsString(gameList.get(gameID).getCurrentPlayerTurn());
+            json = mapper.writeValueAsString(gameList.get(gameList.indexOf(new Game(gameID))).getCurrentPlayerTurn());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -89,13 +91,13 @@ public class Controller {
 
     @GetMapping("isValidMove")
     public boolean isValidMove(@RequestParam(value = "from") String from, @RequestParam(value = "to") int to,
-                               @RequestParam(value = "player") Player player, @RequestParam(value = "gameID") int gameID) {
-        return gameList.get(gameID).isValidMove(new MoveData(from, to, player));
+                               @RequestParam(value = "player") Player player, @RequestParam(value = "gameID") String gameID) {
+        return gameList.get(gameList.indexOf(new Game(gameID))).isValidMove(new MoveData(from, to, player));
     }
-
+    @GetMapping("makeMove")
     public void makeMove(@RequestParam(value = "from") String from, @RequestParam(value = "to") int to,
-                         @RequestParam(value = "gameID") int gameID) {
-        gameList.get(gameID).makeMove(new MoveData(from, to, null));
+                         @RequestParam(value = "gameID") String gameID) {
+        gameList.get(gameList.indexOf(new Game(gameID))).makeMove(new MoveData(from, to, new Player(gameID)));
     }
 
 }

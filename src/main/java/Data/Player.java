@@ -11,6 +11,10 @@ public class Player implements Serializable {
     Player() {
     }
 
+    Player(String gameID) {
+        this(0,0,gameID);
+    }
+
     Player(int eaten, int color, String gameID) {
         this.eaten = eaten;
         this.color = color;
