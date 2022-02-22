@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import static org.junit.Assert.*;
 public class Test {
     List<String> playersID = new ArrayList<>();
@@ -30,7 +29,6 @@ public class Test {
         String id;
         for (int i = 0; i < n; i++) {
             id = get(new URL("http://localhost:8081/init"));
-            //System.out.println(id);
             playersID.add(id);
         }
     }
@@ -48,7 +46,6 @@ public class Test {
             URL url = new URL("http://localhost:8081/triangle?index=" + i + "&gameID=" + playersID.get(0));
             String s = get(url);
             Triangle triangle = mapper.readValue(s, Triangle.class);
-            //System.out.println(triangle);
             triangles.add(triangle);
         }
         assertEquals (triangles.get(0),new Triangle(Triangle.BROWN, 2, Triangle.RED));
