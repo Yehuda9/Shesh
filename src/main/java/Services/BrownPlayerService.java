@@ -9,6 +9,11 @@ public class BrownPlayerService extends PlayerService {
     }
 
     @Override
+    public int addOrSubtractLoc(int loc, int delta) {
+        return loc+delta;
+    }
+
+    @Override
     public int delta(int t) {
         return t+1;
     }

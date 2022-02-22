@@ -19,7 +19,7 @@ public class Controller {
     @GetMapping("init")
     public String init() {
         String id = generateID();
-        if (numOfGames == 0) {
+        if (gameList.isEmpty()) {
             gameList.add(new Game(id));
         }
         for (Game g : gameList) {
@@ -31,8 +31,10 @@ public class Controller {
                 return g.getGameID() + Triangle.WHITE;
             }
         }
-        gameList.add(new Game(id));
-        return numOfGames + "0";
+        Game newGame = new Game(id);
+        newGame.setBrownPlayer();
+        gameList.add(newGame);
+        return newGame.getGameID() + Triangle.BROWN;
     }
 
     private String generateID() {
@@ -94,6 +96,7 @@ public class Controller {
                                @RequestParam(value = "player") Player player, @RequestParam(value = "gameID") String gameID) {
         return gameList.get(gameList.indexOf(new Game(gameID))).isValidMove(new MoveData(from, to, player));
     }
+
     @GetMapping("makeMove")
     public void makeMove(@RequestParam(value = "from") String from, @RequestParam(value = "to") int to,
                          @RequestParam(value = "gameID") String gameID) {

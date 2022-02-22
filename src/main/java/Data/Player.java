@@ -1,6 +1,7 @@
 package Data;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Player implements Serializable {
     protected int eaten;
@@ -46,6 +47,20 @@ public class Player implements Serializable {
         this.gameID = gameID;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Player player = (Player) o;
+        return color == player.color && Objects.equals(gameID, player.gameID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, gameID);
+    }
 
     public String getGameID() {
         return gameID;

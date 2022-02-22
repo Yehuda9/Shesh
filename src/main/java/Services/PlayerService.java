@@ -11,7 +11,7 @@ abstract public class PlayerService {
         player.setEaten(player.getEaten() + 1);
     }
     abstract public int delta(int f, int t);
-
+    abstract public int addOrSubtractLoc(int loc,int delta);
     abstract public int delta(int t);
 
     public abstract String eatenName();

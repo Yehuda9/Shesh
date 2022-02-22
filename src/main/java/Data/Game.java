@@ -35,7 +35,8 @@ public class Game {
             initializeTriangles();
             return;
         }
-        this.currentPlayerTurn=brownPlayer;
+        this.currentPlayerTurn = brownPlayer;
+        this.playerService = brownPlayerService;
     }
 
     public String getGameID() {
@@ -48,16 +49,17 @@ public class Game {
             initializeTriangles();
             return;
         }
-        this.currentPlayerTurn=whitePlayer;
+        this.currentPlayerTurn = whitePlayer;
+        this.playerService = whitePlayerService;
     }
 
     private void initializeTriangles() {
         final int delta = 800 / 12;
         for (int i = 0; i < 12; i++) {
-            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK);
+            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK,i);
         }
         for (int i = 12; i < 24; i++) {
-            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK);
+            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK,i);
         }
         this.triangles[0].setNumOfCoins(2);
         this.triangles[5].setNumOfCoins(5);
@@ -103,7 +105,7 @@ public class Game {
         String from = moveData.getFrom();
         int to = moveData.getTo();
         Player player = moveData.getPlayer();
-        if (player != currentPlayerTurn) {
+        if (!player.equals(currentPlayerTurn)) {
             return false;
         }
         try {
@@ -202,27 +204,36 @@ public class Game {
 
 
     protected List<MoveData> availableMoves() {
-        List<MoveData> moveDataList = new ArrayList<>();
-        OptionalInt m = Arrays.stream(currentDice.getCurrentDice()).max();
-        int maxDice = 0;
+        Map<String, List<MoveData>> moveDataMap = new HashMap<>();
+        //OptionalInt m = Arrays.stream(currentDice.getCurrentDice()).max();
+
+        /*int maxDice = 0;
         if (m.isPresent()) {
             maxDice = m.getAsInt();
         } else {
             return null;
-        }
-        try {
+        }*/
+        /*try {
             for (int j = 0; j < 24; j++) {
                 for (int i = j + 1; i < maxDice; i++) {
                     MoveData moveData = new MoveData(Integer.toString(j), i, currentPlayerTurn);
                     if (isValidMove(moveData)) {
-                        moveDataList.add(moveData);
+                        moveDataMap.add(moveData);
                     }
                 }
             }
 
         } catch (Exception e) {
-        }
+        }*/
+        for (Triangle triangle : triangles) {
+            if (triangle.getColorOfCoins() == currentPlayerTurn.color) {
+                MoveData moveData1 = new MoveData(String.valueOf(triangle.getLoc()),getCurrentDice().getCurrentDice()[0],
+                        currentPlayerTurn);
+                if (isValidMove(moveData1)){
 
+                }
+            }
+        }
         return null;
     }
 

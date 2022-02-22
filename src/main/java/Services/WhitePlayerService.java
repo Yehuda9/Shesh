@@ -9,6 +9,11 @@ public class WhitePlayerService extends PlayerService {
     }
 
     @Override
+    public int addOrSubtractLoc(int loc, int delta) {
+        return loc-delta;
+    }
+
+    @Override
     public int delta(int t) {
         return 24-t;
     }

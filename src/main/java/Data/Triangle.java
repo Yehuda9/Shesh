@@ -1,4 +1,5 @@
 package Data;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -15,11 +16,16 @@ public class Triangle implements Serializable {
     private int numOfCoins;
     @JsonProperty("colorOfPolygon")
     private int colorOfPolygon;
+    @JsonProperty("loc")
+    private int loc;
 
 
-    Triangle(){}
-    Triangle(int colorOfCoins, int numOfCoins, int colorOfPolygon) {
-        this.numOfCoins=numOfCoins;
+    Triangle() {
+    }
+
+    Triangle(int colorOfCoins, int numOfCoins, int colorOfPolygon, int loc) {
+        this.numOfCoins = numOfCoins;
+        this.loc = loc;
         if (colorOfPolygon == RED || colorOfPolygon == BLACK) {
             this.colorOfPolygon = colorOfPolygon;
         } else {
@@ -30,6 +36,14 @@ public class Triangle implements Serializable {
 
     public void setColorOfPolygon(int colorOfPolygon) {
         this.colorOfPolygon = colorOfPolygon;
+    }
+
+    public int getLoc() {
+        return loc;
+    }
+
+    public void setLoc(int loc) {
+        this.loc = loc;
     }
 
     public void setNumOfCoins(int numOfCoins) {
@@ -58,6 +72,7 @@ public class Triangle implements Serializable {
                 "colorOfCoins=" + colorOfCoins +
                 ", numOfCoins=" + numOfCoins +
                 ", colorOfPolygon=" + colorOfPolygon +
+                ", loc=" + loc +
                 '}';
     }
 
@@ -68,11 +83,11 @@ public class Triangle implements Serializable {
         if (o == null || getClass() != o.getClass())
             return false;
         Triangle triangle = (Triangle) o;
-        return colorOfCoins == triangle.colorOfCoins && numOfCoins == triangle.numOfCoins && colorOfPolygon == triangle.colorOfPolygon;
+        return colorOfCoins == triangle.colorOfCoins && numOfCoins == triangle.numOfCoins && colorOfPolygon == triangle.colorOfPolygon && loc == triangle.loc;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(colorOfCoins, numOfCoins, colorOfPolygon);
+        return Objects.hash(colorOfCoins, numOfCoins, colorOfPolygon, loc);
     }
 }
