@@ -56,10 +56,10 @@ public class Game {
     private void initializeTriangles() {
         final int delta = 800 / 12;
         for (int i = 0; i < 12; i++) {
-            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK,i);
+            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK, i);
         }
         for (int i = 12; i < 24; i++) {
-            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK,i);
+            this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK, i);
         }
         this.triangles[0].setNumOfCoins(2);
         this.triangles[5].setNumOfCoins(5);
@@ -125,7 +125,7 @@ public class Game {
     }
 
     private boolean isValidMove(int from, int to) {
-        if (currentPlayerTurn.getColor() == triangles[from].getColorOfCoins()
+        if (from != to && from < 24 && from > -1 && to < 24 && to > -1 && currentPlayerTurn.getColor() == triangles[from].getColorOfCoins()
                 && (triangles[from].getNumOfCoins() > 0) && (triangles[to].getNumOfCoins() <= 1 ||
                 triangles[to].getColorOfCoins() == currentPlayerTurn.getColor())) {
             int d = playerService.delta(from, to);
@@ -203,38 +203,63 @@ public class Game {
     }
 
 
-    protected List<MoveData> availableMoves() {
-        Map<String, List<MoveData>> moveDataMap = new HashMap<>();
-        //OptionalInt m = Arrays.stream(currentDice.getCurrentDice()).max();
-
-        /*int maxDice = 0;
-        if (m.isPresent()) {
-            maxDice = m.getAsInt();
-        } else {
-            return null;
-        }*/
-        /*try {
-            for (int j = 0; j < 24; j++) {
-                for (int i = j + 1; i < maxDice; i++) {
-                    MoveData moveData = new MoveData(Integer.toString(j), i, currentPlayerTurn);
-                    if (isValidMove(moveData)) {
-                        moveDataMap.add(moveData);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-        }*/
+    public Map<String, Set<MoveData>> availableMoves() {
+        Map<String, Set<MoveData>> moveDataMap = new HashMap<>();
+        int[] dice = getCurrentDice().getCurrentDice();
+        List<Integer> distSums = distSum();
         for (Triangle triangle : triangles) {
-            if (triangle.getColorOfCoins() == currentPlayerTurn.color) {
-                MoveData moveData1 = new MoveData(String.valueOf(triangle.getLoc()),getCurrentDice().getCurrentDice()[0],
+            if (triangle.getColorOfCoins() != currentPlayerTurn.color) {
+                continue;
+            }
+            for (int i : distSums/*Arrays.stream(dice).filter(value -> value != 0).toArray()*/) {
+                MoveData moveData1 = new MoveData(String.valueOf(triangle.getLoc()), triangle.getLoc() + i,
                         currentPlayerTurn);
-                if (isValidMove(moveData1)){
-
+                if (isValidMove(moveData1)) {
+                    moveDataMap.computeIfAbsent(moveData1.getFrom(), k -> new HashSet<>());
+                    moveDataMap.get(moveData1.getFrom()).add(moveData1);
                 }
             }
+            /*MoveData moveData1 = new MoveData(String.valueOf(triangle.getLoc()), triangle.getLoc() + dice[0]+dice[1],
+                    currentPlayerTurn);
+            if (isValidMove(moveData1)) {
+                moveDataMap.computeIfAbsent(moveData1.getFrom(), k -> new HashSet<>());
+                moveDataMap.get(moveData1.getFrom()).add(moveData1);
+            }
+            moveData1 = new MoveData(String.valueOf(triangle.getLoc()), triangle.getLoc() + dice[1]+dice[2],
+                    currentPlayerTurn);
+            if (isValidMove(moveData1)) {
+                moveDataMap.computeIfAbsent(moveData1.getFrom(), k -> new HashSet<>());
+                moveDataMap.get(moveData1.getFrom()).add(moveData1);
+            }
+            moveData1 = new MoveData(String.valueOf(triangle.getLoc()), triangle.getLoc() + dice[2]+dice[3],
+                    currentPlayerTurn);
+            if (isValidMove(moveData1)) {
+                moveDataMap.computeIfAbsent(moveData1.getFrom(), k -> new HashSet<>());
+                moveDataMap.get(moveData1.getFrom()).add(moveData1);
+            }*/
         }
-        return null;
+        return moveDataMap;
+    }
+
+    private List<Integer> distSum() {
+        Set<Integer> set = new HashSet<>();
+        distSumRec(getCurrentDice().getCurrentDice(), 4, 0, 0, set);
+        return set.stream().toList();
+    }
+
+    private void distSumRec(int[] arr, int n, int sum,
+                            int currindex, Set<Integer> s) {
+        if (currindex > n)
+            return;
+
+        if (currindex == n) {
+            s.add(sum);
+            return;
+        }
+
+        distSumRec(arr, n, sum + arr[currindex],
+                currindex + 1, s);
+        distSumRec(arr, n, sum, currindex + 1, s);
     }
 
     @Override

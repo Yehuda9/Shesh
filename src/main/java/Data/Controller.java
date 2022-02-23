@@ -6,10 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 public class Controller {
@@ -101,6 +98,11 @@ public class Controller {
     public void makeMove(@RequestParam(value = "from") String from, @RequestParam(value = "to") int to,
                          @RequestParam(value = "gameID") String gameID) {
         gameList.get(gameList.indexOf(new Game(gameID))).makeMove(new MoveData(from, to, new Player(gameID)));
+    }
+
+    @GetMapping("availableMoves")
+    public Map<String, Set<MoveData>> availableMoves(@RequestParam(value = "gameID") String gameID) {
+        return gameList.get(gameList.indexOf(new Game(gameID))).availableMoves();
     }
 
 }
