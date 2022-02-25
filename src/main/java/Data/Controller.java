@@ -10,6 +10,7 @@ import java.util.*;
 
 @RestController
 public class Controller {
+    private final Map<String,Game> gameMap = new HashMap<>();
     private final List<Game> gameList = new ArrayList<>();
     private int numOfGames;
 

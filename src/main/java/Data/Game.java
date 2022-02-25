@@ -14,10 +14,10 @@ public class Game {
     private final Dice currentDice = new Dice();
     private Player currentPlayerTurn;
     private final String gameID;
-    TriangleService triangleService;
-    PlayerService whitePlayerService;
-    PlayerService brownPlayerService;
-    PlayerService playerService;
+    private final TriangleService triangleService;
+    private final PlayerService whitePlayerService;
+    private final PlayerService brownPlayerService;
+    private PlayerService playerService;
 
 
     Game(String id) {
@@ -54,7 +54,6 @@ public class Game {
     }
 
     private void initializeTriangles() {
-        final int delta = 800 / 12;
         for (int i = 0; i < 12; i++) {
             this.triangles[i] = new Triangle(getInitColorOfCoins(i), 0, i % 2 == 0 ? Triangle.RED : Triangle.BLACK, i);
         }
@@ -116,23 +115,15 @@ public class Game {
     }
 
     private boolean isValidMoveForComeBack(String from, int to) {
-        if (currentPlayerTurn.getEaten() > 0 &&
+        return to < 24 && to > -1 && currentPlayerTurn.getEaten() > 0 &&
                 from.equals(playerService.eatenName()) &&
-                (triangles[to].getColorOfCoins() == currentPlayerTurn.getColor() || triangles[to].getNumOfCoins() <= 1)) {
-            return true;
-        }
-        return false;
+                (triangles[to].getColorOfCoins() == currentPlayerTurn.getColor() || triangles[to].getNumOfCoins() <= 1) && currentDice.isValidDelta(playerService.delta(to));
     }
 
     private boolean isValidMove(int from, int to) {
-        if (from != to && from < 24 && from > -1 && to < 24 && to > -1 && currentPlayerTurn.getColor() == triangles[from].getColorOfCoins()
+        return from != to && from < 24 && from > -1 && to < 24 && to > -1 && currentPlayerTurn.getColor() == triangles[from].getColorOfCoins()
                 && (triangles[from].getNumOfCoins() > 0) && (triangles[to].getNumOfCoins() <= 1 ||
-                triangles[to].getColorOfCoins() == currentPlayerTurn.getColor())) {
-            int d = playerService.delta(from, to);
-
-            return Arrays.stream(currentDice.getCurrentDice()).anyMatch(value -> value == d) || currentDice.isValidDelta(d);
-        }
-        return false;
+                triangles[to].getColorOfCoins() == currentPlayerTurn.getColor()) && currentDice.isValidDelta(playerService.delta(from, to));
     }
 
     private void makeEat(int to) {
@@ -206,7 +197,7 @@ public class Game {
     public Map<String, Set<MoveData>> availableMoves() {
         Map<String, Set<MoveData>> moveDataMap = new HashMap<>();
         int[] dice = getCurrentDice().getCurrentDice();
-        List<Integer> distSums = distSum();
+        List<Integer> distSums = getCurrentDice().distSum();
         for (Triangle triangle : triangles) {
             if (triangle.getColorOfCoins() != currentPlayerTurn.color) {
                 continue;
@@ -240,6 +231,7 @@ public class Game {
         }
         return moveDataMap;
     }
+/*
 
     private List<Integer> distSum() {
         Set<Integer> set = new HashSet<>();
@@ -261,6 +253,7 @@ public class Game {
                 currindex + 1, s);
         distSumRec(arr, n, sum, currindex + 1, s);
     }
+*/
 
     @Override
     public boolean equals(Object o) {

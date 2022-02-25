@@ -1,7 +1,6 @@
 package Data;
 
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
 
 public class Dice {
     private int[] currentDice;
@@ -23,8 +22,29 @@ public class Dice {
         return currentDice;
     }
 
+    public List<Integer> distSum() {
+        Set<Integer> set = new HashSet<>();
+        distSumRec(getCurrentDice(), 4, 0, 0, set);
+        return set.stream().toList();
+    }
+
+    private void distSumRec(int[] arr, int n, int sum,
+                            int currindex, Set<Integer> s) {
+        if (currindex > n) {
+            return;
+        }
+        if (currindex == n) {
+            s.add(sum);
+            return;
+        }
+        distSumRec(arr, n, sum + arr[currindex],
+                currindex + 1, s);
+        distSumRec(arr, n, sum, currindex + 1, s);
+    }
+
     public boolean isValidDelta(int d) {
-        int i = 0;
+        return distSum().contains(d);
+        /*int i = 0;
         int sum = 0;
         while (i < currentDice.length) {
             sum += currentDice[i];
@@ -33,7 +53,7 @@ public class Dice {
             }
             i++;
         }
-        return false;
+        return false;*/
     }
 
     @Override
