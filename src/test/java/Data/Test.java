@@ -1,8 +1,16 @@
 package Data;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.MapType;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import org.objectweb.asm.TypeReference;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -87,24 +95,35 @@ public class Test {
         assertEquals(triangle2.getNumOfCoins(), triangle1.getNumOfCoins() + 1);
     }
 
-    private Triangle getTriangle(int i) throws IOException {
-        return mapper.readValue(new URL("http://localhost:8081/triangle?index=" + i + "&gameID=" + gameID),
-                Triangle.class);
-    }
 
     public void availableMoves() throws IOException {
-        /*TypeReference<HashMap<String, List<MoveData>>> typeRef
-                = new TypeReference<HashMap<String, List<MoveData>>>() {};
-        Map<String, List<MoveData>> moveDataMap1=new HashMap<String, List<MoveData>>();*/
-        Map<String, List<MoveData>> moveDataMap = mapper.readValue(
-                get(new URL("http://localhost:8081/availableMoves?gameID=" + gameID)), HashMap.class
-                /*new TypeReference<HashMap<String,TypeReference<List<TypeReference<MoveData>>>>>() {}*/);
+        String str = get(new URL("http://localhost:8081" +
+                "/availableMoves" + "?gameID=" + gameID));
+        Map<String, List<MoveData>> moveDataMap = jsonToMap(str);
         for (Map.Entry<String, List<MoveData>> s : moveDataMap.entrySet()) {
             System.out.println(s.getKey() + ": ");
             for (MoveData moveData : s.getValue()) {
                 System.out.println(moveData);
             }
         }
+    }
+
+    private Map<String, List<MoveData>> jsonToMap(String json) throws JsonProcessingException {
+        Gson gson = new Gson();
+        Type type = new TypeToken<HashMap<String, List<MoveData>>>() {}.getType();
+        // Use fromJson method to deserialize json into an ArrayList of Map
+        return gson.fromJson(json, type);
+        /*JavaType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, MoveData.class);
+        MapType mapType = mapper.getTypeFactory().constructMapType(HashMap.class, String.class,
+                LinkedHashMap.class);
+        Map<String, LinkedHashMap<String,MoveData>> moveDataMap1 = mapper.readValue(json, mapType);
+        Map<String, List<MoveData>> moveDataMap2 = new HashMap<>();
+        for (Map.Entry<String, LinkedHashMap<String, MoveData>> entry : moveDataMap1.entrySet()) {
+            for (int i = 0; i < entry.getValue().size(); i++) {
+                System.out.println("");
+            }
+        }
+        return null;*/
     }
 
     private String get(URL url) throws IOException {
@@ -124,6 +143,11 @@ public class Test {
     private int[] getDice() throws IOException {
         String s1 = get(new URL("http://localhost:8081/pour?gameID=" + this.gameID));
         return mapper.readValue(s1, int[].class);
+    }
+
+    private Triangle getTriangle(int i) throws IOException {
+        return mapper.readValue(new URL("http://localhost:8081/triangle?index=" + i + "&gameID=" + gameID),
+                Triangle.class);
     }
 
     public static void main(String[] args) throws IOException {
