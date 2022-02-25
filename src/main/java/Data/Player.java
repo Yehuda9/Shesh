@@ -13,11 +13,14 @@ public class Player implements Serializable {
     }
 
     Player(String gameID) {
-        this(0, gameID.charAt(gameID.length() - 1), gameID);
+        this(0, Integer.parseInt(String.valueOf(gameID.charAt(gameID.length() - 1))), gameID.substring(0,
+                gameID.length() - 1));
     }
-    Player(String gameID,int color) {
+
+    Player(String gameID, int color) {
         this(0, color, gameID);
     }
+
     Player(int eaten, int color, String gameID) {
         this.eaten = eaten;
         this.color = color;

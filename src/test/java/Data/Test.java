@@ -1,13 +1,10 @@
 package Data;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.databind.type.MapType;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.objectweb.asm.TypeReference;
+
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -19,17 +16,15 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class Test {
-    String brownPlayerID;
-    String whitePlayerID;
-    String gameID;
-    ObjectMapper mapper = new ObjectMapper();
+    private String brownPlayerID;
+    private String whitePlayerID;
+    private String gameID;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     void init() throws IOException {
         connect2Users();
-        assertEquals(Integer.parseInt(String.valueOf(brownPlayerID.charAt(brownPlayerID.length() - 1))), Triangle.BROWN);
-        assertEquals(Integer.parseInt(String.valueOf(whitePlayerID.charAt(whitePlayerID.length() - 1))), Triangle.WHITE);
-        /*whitePlayerID = whitePlayerID.substring(0, brownPlayerID.length() - 1);
-        brownPlayerID = brownPlayerID.substring(0, brownPlayerID.length() - 1);*/
+        assertEquals(Integer.parseInt(String.valueOf(brownPlayerID.charAt(brownPlayerID.length() - 1))), 0);
+        assertEquals(Integer.parseInt(String.valueOf(whitePlayerID.charAt(whitePlayerID.length() - 1))), 1);
         assertEquals(brownPlayerID.substring(0, brownPlayerID.length() - 1), whitePlayerID.substring(0,
                 whitePlayerID.length() - 1));
         gameID = brownPlayerID.substring(0, brownPlayerID.length() - 1);
@@ -43,36 +38,31 @@ public class Test {
     }
 
     void getTriangle() throws IOException {
-        List<Triangle> triangles = new ArrayList<>();
-        for (int i = 0; i < 24; i++) {
-            Triangle triangle = getTriangle(i);
-            triangles.add(triangle);
-        }
-        assertEquals(triangles.get(0), new Triangle(Triangle.BROWN, 2, Triangle.RED, 0));
-        assertEquals(triangles.get(1), new Triangle(-1, 0, Triangle.BLACK, 1));
-        assertEquals(triangles.get(2), new Triangle(-1, 0, Triangle.RED, 2));
-        assertEquals(triangles.get(3), new Triangle(-1, 0, Triangle.BLACK, 3));
-        assertEquals(triangles.get(4), new Triangle(-1, 0, Triangle.RED, 4));
-        assertEquals(triangles.get(5), new Triangle(Triangle.WHITE, 5, Triangle.BLACK, 5));
-        assertEquals(triangles.get(6), new Triangle(-1, 0, Triangle.RED, 6));
-        assertEquals(triangles.get(7), new Triangle(Triangle.WHITE, 3, Triangle.BLACK, 7));
-        assertEquals(triangles.get(8), new Triangle(-1, 0, Triangle.RED, 8));
-        assertEquals(triangles.get(9), new Triangle(-1, 0, Triangle.BLACK, 9));
-        assertEquals(triangles.get(10), new Triangle(-1, 0, Triangle.RED, 10));
-        assertEquals(triangles.get(11), new Triangle(Triangle.BROWN, 5, Triangle.BLACK, 11));
+        assertEquals(getTriangle(0), "{\"colorOfCoins\":0,\"numOfCoins\":2,\"colorOfPolygon\":2,\"loc\":0}");
+        assertEquals(getTriangle(1), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":3,\"loc\":1}");
+        assertEquals(getTriangle(2), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":2,\"loc\":2}");
+        assertEquals(getTriangle(3), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":3,\"loc\":3}");
+        assertEquals(getTriangle(4), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":2,\"loc\":4}");
+        assertEquals(getTriangle(5), "{\"colorOfCoins\":1,\"numOfCoins\":5,\"colorOfPolygon\":3,\"loc\":5}");
+        assertEquals(getTriangle(6), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":2,\"loc\":6}");
+        assertEquals(getTriangle(7), "{\"colorOfCoins\":1,\"numOfCoins\":3,\"colorOfPolygon\":3,\"loc\":7}");
+        assertEquals(getTriangle(8), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":2,\"loc\":8}");
+        assertEquals(getTriangle(9), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":3,\"loc\":9}");
+        assertEquals(getTriangle(10), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":2,\"loc\":10}");
+        assertEquals(getTriangle(11), "{\"colorOfCoins\":0,\"numOfCoins\":5,\"colorOfPolygon\":3,\"loc\":11}");
 
-        assertEquals(triangles.get(12), new Triangle(Triangle.WHITE, 5, Triangle.RED, 12));
-        assertEquals(triangles.get(13), new Triangle(-1, 0, Triangle.BLACK, 13));
-        assertEquals(triangles.get(14), new Triangle(-1, 0, Triangle.RED, 14));
-        assertEquals(triangles.get(15), new Triangle(-1, 0, Triangle.BLACK, 15));
-        assertEquals(triangles.get(16), new Triangle(Triangle.BROWN, 3, Triangle.RED, 16));
-        assertEquals(triangles.get(17), new Triangle(-1, 0, Triangle.BLACK, 17));
-        assertEquals(triangles.get(18), new Triangle(Triangle.BROWN, 5, Triangle.RED, 18));
-        assertEquals(triangles.get(19), new Triangle(-1, 0, Triangle.BLACK, 19));
-        assertEquals(triangles.get(20), new Triangle(-1, 0, Triangle.RED, 20));
-        assertEquals(triangles.get(21), new Triangle(-1, 0, Triangle.BLACK, 21));
-        assertEquals(triangles.get(22), new Triangle(-1, 0, Triangle.RED, 22));
-        assertEquals(triangles.get(23), new Triangle(Triangle.WHITE, 2, Triangle.BLACK, 23));
+        assertEquals(getTriangle(12), "{\"colorOfCoins\":1,\"numOfCoins\":5,\"colorOfPolygon\":2,\"loc\":12}");
+        assertEquals(getTriangle(13), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":3,\"loc\":13}");
+        assertEquals(getTriangle(14), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":2,\"loc\":14}");
+        assertEquals(getTriangle(15), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":3,\"loc\":15}");
+        assertEquals(getTriangle(16), "{\"colorOfCoins\":0,\"numOfCoins\":3,\"colorOfPolygon\":2,\"loc\":16}");
+        assertEquals(getTriangle(17), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":3,\"loc\":17}");
+        assertEquals(getTriangle(18), "{\"colorOfCoins\":0,\"numOfCoins\":5,\"colorOfPolygon\":2,\"loc\":18}");
+        assertEquals(getTriangle(19), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":3,\"loc\":19}");
+        assertEquals(getTriangle(20), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":2,\"loc\":20}");
+        assertEquals(getTriangle(21), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":3,\"loc\":21}");
+        assertEquals(getTriangle(22), "{\"colorOfCoins\":-1,\"numOfCoins\":0,\"colorOfPolygon\":2,\"loc\":22}");
+        assertEquals(getTriangle(23), "{\"colorOfCoins\":1,\"numOfCoins\":2,\"colorOfPolygon\":3,\"loc\":23}");
     }
 
     void getCurrentDice() {
@@ -87,18 +77,25 @@ public class Test {
 
     void makeMove() throws IOException {
         int[] dice = getDice();
-        Triangle triangle1 = getTriangle(dice[0]);
+        Triangle triangle1 = mapper.readValue(getTriangle(dice[0]), Triangle.class);
         get(new URL("http://localhost:8081/makeMove?from=" + 0 + "&to=" + dice[0] + "&playerID=" + this.brownPlayerID));
-        Triangle triangle2 = getTriangle(dice[0]);
+        Triangle triangle2 = mapper.readValue(getTriangle(dice[0]), Triangle.class);
         assertNotEquals(triangle1, triangle2);
-        assertEquals(triangle2.getColorOfCoins(), triangle1.getColorOfCoins());
+        assertEquals(triangle2.getColorOfCoins(), 0);
+        assertEquals(triangle2.getNumOfCoins(), triangle1.getNumOfCoins() + 1);
+
+        triangle1 = mapper.readValue(getTriangle(dice[1]), Triangle.class);
+        get(new URL("http://localhost:8081/makeMove?from=" + 0 + "&to=" + dice[1] + "&playerID=" + this.brownPlayerID));
+        triangle2 = mapper.readValue(getTriangle(dice[1]), Triangle.class);
+        assertNotEquals(triangle1, triangle2);
+        assertEquals(triangle2.getColorOfCoins(), 0);
         assertEquals(triangle2.getNumOfCoins(), triangle1.getNumOfCoins() + 1);
     }
 
 
     public void availableMoves() throws IOException {
-        String str = get(new URL("http://localhost:8081" +
-                "/availableMoves" + "?gameID=" + gameID));
+        System.out.println(Arrays.toString(getDice()));
+        String str = get(new URL("http://localhost:8081/availableMoves?gameID=" + gameID));
         Map<String, List<MoveData>> moveDataMap = jsonToMap(str);
         for (Map.Entry<String, List<MoveData>> s : moveDataMap.entrySet()) {
             System.out.println(s.getKey() + ": ");
@@ -108,22 +105,11 @@ public class Test {
         }
     }
 
-    private Map<String, List<MoveData>> jsonToMap(String json) throws JsonProcessingException {
+    private Map<String, List<MoveData>> jsonToMap(String json) {
         Gson gson = new Gson();
-        Type type = new TypeToken<HashMap<String, List<MoveData>>>() {}.getType();
-        // Use fromJson method to deserialize json into an ArrayList of Map
+        Type type = new TypeToken<HashMap<String, List<MoveData>>>() {
+        }.getType();
         return gson.fromJson(json, type);
-        /*JavaType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, MoveData.class);
-        MapType mapType = mapper.getTypeFactory().constructMapType(HashMap.class, String.class,
-                LinkedHashMap.class);
-        Map<String, LinkedHashMap<String,MoveData>> moveDataMap1 = mapper.readValue(json, mapType);
-        Map<String, List<MoveData>> moveDataMap2 = new HashMap<>();
-        for (Map.Entry<String, LinkedHashMap<String, MoveData>> entry : moveDataMap1.entrySet()) {
-            for (int i = 0; i < entry.getValue().size(); i++) {
-                System.out.println("");
-            }
-        }
-        return null;*/
     }
 
     private String get(URL url) throws IOException {
@@ -131,7 +117,7 @@ public class Test {
         connection.setRequestMethod("GET");
         connection.connect();
         String s = new String(connection.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-        System.out.println(s);
+        //System.out.println(s);
         return s;
     }
 
@@ -145,16 +131,18 @@ public class Test {
         return mapper.readValue(s1, int[].class);
     }
 
-    private Triangle getTriangle(int i) throws IOException {
-        return mapper.readValue(new URL("http://localhost:8081/triangle?index=" + i + "&gameID=" + gameID),
-                Triangle.class);
+    private String getTriangle(int i) throws IOException {
+        return get(new URL("http://localhost:8081/triangle?index=" + i + "&gameID=" + gameID));
     }
 
     public static void main(String[] args) throws IOException {
         Test test = new Test();
         test.init();
         test.getTriangle();
-        //test.makeMove();
+        test.availableMoves();
+        test.makeMove();
+        test.availableMoves();
+        test.makeMove();
         test.availableMoves();
     }
 }

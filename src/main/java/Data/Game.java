@@ -68,7 +68,6 @@ public class Game {
         this.triangles[16].setNumOfCoins(3);
         this.triangles[18].setNumOfCoins(5);
         this.triangles[23].setNumOfCoins(2);
-
     }
 
     private int getInitColorOfCoins(int i) {
@@ -100,7 +99,7 @@ public class Game {
     }
 
 
-    public boolean isValidMove(String from,int to,Player player) {
+    public boolean isValidMove(String from, int to, Player player) {
         if (!player.equals(currentPlayerTurn)) {
             return false;
         }
@@ -134,8 +133,8 @@ public class Game {
         }
     }
 
-    public void makeMove(String from,int to,Player player) {
-        if (!isValidMove(from,to,player)) {
+    public void makeMove(String from, int to, Player player) {
+        if (!isValidMove(from, to, player)) {
             return;
         }
         if (triangles[to].getNumOfCoins() == 1 && triangles[to].getColorOfCoins() != currentPlayerTurn.getColor()) {
@@ -198,10 +197,13 @@ public class Game {
             }
             for (int i : distSums) {
                 String from = String.valueOf(triangle.getLoc());
-                int to = triangle.getLoc() + i;
-                if (isValidMove(from,to,currentPlayerTurn)) {
+                int to = playerService.addOrSubtractLoc(triangle.getLoc(),i);
+                if (isValidMove(from, to, currentPlayerTurn)) {
                     moveDataMap.computeIfAbsent(from, k -> new HashSet<>());
-                    moveDataMap.get(from).add(new MoveData(from,to,currentPlayerTurn.getPlayerID()));
+                    moveDataMap.get(from).add(new MoveData(from, to,
+                            currentPlayerTurn.getPlayerID(),
+                            triangles[to].getNumOfCoins() == 1 &&
+                            triangles[to].getColorOfCoins() != currentPlayerTurn.getColor()));
                 }
             }
         }

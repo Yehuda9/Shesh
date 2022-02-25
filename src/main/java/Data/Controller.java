@@ -54,7 +54,7 @@ public class Controller {
         String json = null;
         try {
             json =
-                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gameMap.get(gameID).getTriangles()[i]);
+                    mapper.writeValueAsString(gameMap.get(gameID).getTriangles()[i]);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

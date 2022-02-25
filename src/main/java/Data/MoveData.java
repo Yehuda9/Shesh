@@ -8,10 +8,15 @@ public class MoveData implements Serializable {
     private String playerID;
     private boolean isEat;
 
-    public MoveData(String from, int to, String playerID) {
+    public MoveData(String from, int to, String playerID,boolean isEat) {
         this.from = from;
         this.to = to;
         this.playerID = playerID;
+        this.isEat=isEat;
+    }
+
+    public MoveData(String from, int to, String playerID) {
+        this(from,to,playerID,false);
     }
 
     MoveData() {
