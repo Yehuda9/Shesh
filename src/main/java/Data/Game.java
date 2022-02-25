@@ -22,8 +22,8 @@ public class Game {
 
     Game(String id) {
         this.gameID = id;
-        brownPlayer = null;
-        whitePlayer = null;
+        this.brownPlayer = null;
+        this.whitePlayer = null;
         this.triangleService = new TriangleService();
         this.whitePlayerService = new WhitePlayerService();
         this.brownPlayerService = new BrownPlayerService();
@@ -100,10 +100,7 @@ public class Game {
     }
 
 
-    public boolean isValidMove(MoveData moveData) {
-        String from = moveData.getFrom();
-        int to = moveData.getTo();
-        Player player = moveData.getPlayer();
+    public boolean isValidMove(String from,int to,Player player) {
         if (!player.equals(currentPlayerTurn)) {
             return false;
         }
@@ -137,12 +134,10 @@ public class Game {
         }
     }
 
-    public void makeMove(MoveData moveData) {
-        if (!isValidMove(moveData)) {
+    public void makeMove(String from,int to,Player player) {
+        if (!isValidMove(from,to,player)) {
             return;
         }
-        String from = moveData.getFrom();
-        int to = moveData.getTo();
         if (triangles[to].getNumOfCoins() == 1 && triangles[to].getColorOfCoins() != currentPlayerTurn.getColor()) {
             makeEat(to);
         }
@@ -152,7 +147,7 @@ public class Game {
             triangleService.decreaseCoins(triangles[f]);
             triangleService.increaseCoins(triangles[to]);
             moveDone(playerService.delta(f, to));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             triangles[to].setColorOfCoins(currentPlayerTurn.getColor());
             triangleService.increaseCoins(triangles[to]);
             playerService.decreaseEaten(currentPlayerTurn);
@@ -196,64 +191,22 @@ public class Game {
 
     public Map<String, Set<MoveData>> availableMoves() {
         Map<String, Set<MoveData>> moveDataMap = new HashMap<>();
-        int[] dice = getCurrentDice().getCurrentDice();
         List<Integer> distSums = getCurrentDice().distSum();
         for (Triangle triangle : triangles) {
             if (triangle.getColorOfCoins() != currentPlayerTurn.color) {
                 continue;
             }
-            for (int i : distSums/*Arrays.stream(dice).filter(value -> value != 0).toArray()*/) {
-                MoveData moveData1 = new MoveData(String.valueOf(triangle.getLoc()), triangle.getLoc() + i,
-                        currentPlayerTurn);
-                if (isValidMove(moveData1)) {
-                    moveDataMap.computeIfAbsent(moveData1.getFrom(), k -> new HashSet<>());
-                    moveDataMap.get(moveData1.getFrom()).add(moveData1);
+            for (int i : distSums) {
+                String from = String.valueOf(triangle.getLoc());
+                int to = triangle.getLoc() + i;
+                if (isValidMove(from,to,currentPlayerTurn)) {
+                    moveDataMap.computeIfAbsent(from, k -> new HashSet<>());
+                    moveDataMap.get(from).add(new MoveData(from,to,currentPlayerTurn.getPlayerID()));
                 }
             }
-            /*MoveData moveData1 = new MoveData(String.valueOf(triangle.getLoc()), triangle.getLoc() + dice[0]+dice[1],
-                    currentPlayerTurn);
-            if (isValidMove(moveData1)) {
-                moveDataMap.computeIfAbsent(moveData1.getFrom(), k -> new HashSet<>());
-                moveDataMap.get(moveData1.getFrom()).add(moveData1);
-            }
-            moveData1 = new MoveData(String.valueOf(triangle.getLoc()), triangle.getLoc() + dice[1]+dice[2],
-                    currentPlayerTurn);
-            if (isValidMove(moveData1)) {
-                moveDataMap.computeIfAbsent(moveData1.getFrom(), k -> new HashSet<>());
-                moveDataMap.get(moveData1.getFrom()).add(moveData1);
-            }
-            moveData1 = new MoveData(String.valueOf(triangle.getLoc()), triangle.getLoc() + dice[2]+dice[3],
-                    currentPlayerTurn);
-            if (isValidMove(moveData1)) {
-                moveDataMap.computeIfAbsent(moveData1.getFrom(), k -> new HashSet<>());
-                moveDataMap.get(moveData1.getFrom()).add(moveData1);
-            }*/
         }
         return moveDataMap;
     }
-/*
-
-    private List<Integer> distSum() {
-        Set<Integer> set = new HashSet<>();
-        distSumRec(getCurrentDice().getCurrentDice(), 4, 0, 0, set);
-        return set.stream().toList();
-    }
-
-    private void distSumRec(int[] arr, int n, int sum,
-                            int currindex, Set<Integer> s) {
-        if (currindex > n)
-            return;
-
-        if (currindex == n) {
-            s.add(sum);
-            return;
-        }
-
-        distSumRec(arr, n, sum + arr[currindex],
-                currindex + 1, s);
-        distSumRec(arr, n, sum, currindex + 1, s);
-    }
-*/
 
     @Override
     public boolean equals(Object o) {

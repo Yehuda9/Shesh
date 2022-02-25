@@ -13,9 +13,11 @@ public class Player implements Serializable {
     }
 
     Player(String gameID) {
-        this(0,0,gameID);
+        this(0, gameID.charAt(gameID.length() - 1), gameID);
     }
-
+    Player(String gameID,int color) {
+        this(0, color, gameID);
+    }
     Player(int eaten, int color, String gameID) {
         this.eaten = eaten;
         this.color = color;
@@ -64,5 +66,9 @@ public class Player implements Serializable {
 
     public String getGameID() {
         return gameID;
+    }
+
+    public String getPlayerID() {
+        return gameID + color;
     }
 }

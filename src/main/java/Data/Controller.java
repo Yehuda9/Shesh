@@ -11,16 +11,14 @@ import java.util.*;
 @RestController
 public class Controller {
     private final Map<String,Game> gameMap = new HashMap<>();
-    private final List<Game> gameList = new ArrayList<>();
-    private int numOfGames;
 
     @GetMapping("init")
     public String init() {
         String id = generateID();
-        if (gameList.isEmpty()) {
-            gameList.add(new Game(id));
+        if (gameMap.isEmpty()) {
+            gameMap.put(id,new Game(id));
         }
-        for (Game g : gameList) {
+        for (Game g : gameMap.values()) {
             if (g.brownPlayer == null) {
                 g.setBrownPlayer();
                 return g.getGameID() + Triangle.BROWN;
@@ -31,7 +29,7 @@ public class Controller {
         }
         Game newGame = new Game(id);
         newGame.setBrownPlayer();
-        gameList.add(newGame);
+        gameMap.put(id,newGame);
         return newGame.getGameID() + Triangle.BROWN;
     }
 
@@ -41,12 +39,13 @@ public class Controller {
 
     @GetMapping("getEatenBrownCoins")
     public String getEatenBrownCoins(@RequestParam(value = "gameID") String gameID) {
-        return String.valueOf(gameList.get(gameList.indexOf(new Game(gameID))).getBrownPlayer().getEaten());
+        return String.valueOf(gameMap.get(gameID).getBrownPlayer().getEaten());
+
     }
 
     @GetMapping("getEatenWhiteCoins")
     public String getEatenWhiteCoins(@RequestParam(value = "gameID") String gameID) {
-        return String.valueOf(gameList.get(gameList.indexOf(new Game(gameID))).getWhitePlayer().getEaten());
+        return String.valueOf(gameMap.get(gameID).getWhitePlayer().getEaten());
     }
 
     @GetMapping("/triangle")
@@ -54,10 +53,8 @@ public class Controller {
         ObjectMapper mapper = new ObjectMapper();
         String json = null;
         try {
-            StringBuilder stringBuffer = new StringBuilder(gameID);
-            gameID = stringBuffer.deleteCharAt(gameID.length() - 1).toString();
             json =
-                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gameList.get(gameList.indexOf(new Game(gameID))).getTriangles()[i]);
+                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(gameMap.get(gameID).getTriangles()[i]);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -70,7 +67,7 @@ public class Controller {
         String json = null;
         try {
             json =
-                    mapper.writeValueAsString(gameList.get(gameList.indexOf(new Game(gameID))).getCurrentDice().getCurrentDice());
+                    mapper.writeValueAsString(gameMap.get(gameID).getCurrentDice().getCurrentDice());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -82,7 +79,7 @@ public class Controller {
         ObjectMapper mapper = new ObjectMapper();
         String json = null;
         try {
-            json = mapper.writeValueAsString(gameList.get(gameList.indexOf(new Game(gameID))).getCurrentPlayerTurn());
+            json = mapper.writeValueAsString(gameMap.get(gameID).getCurrentPlayerTurn());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -91,19 +88,20 @@ public class Controller {
 
     @GetMapping("isValidMove")
     public boolean isValidMove(@RequestParam(value = "from") String from, @RequestParam(value = "to") int to,
-                               @RequestParam(value = "player") Player player, @RequestParam(value = "gameID") String gameID) {
-        return gameList.get(gameList.indexOf(new Game(gameID))).isValidMove(new MoveData(from, to, player));
+                               @RequestParam(value = "playerID") String playerID) {
+        String gameID = playerID.substring(0,playerID.length()-1);
+        return gameMap.get(gameID).isValidMove(from, to, new Player(playerID));
     }
 
     @GetMapping("makeMove")
     public void makeMove(@RequestParam(value = "from") String from, @RequestParam(value = "to") int to,
-                         @RequestParam(value = "gameID") String gameID) {
-        gameList.get(gameList.indexOf(new Game(gameID))).makeMove(new MoveData(from, to, new Player(gameID)));
+                         @RequestParam(value = "playerID") String playerID) {
+        String gameID = playerID.substring(0,playerID.length()-1);
+        gameMap.get(gameID).makeMove(from, to, new Player(playerID));
     }
 
     @GetMapping("availableMoves")
     public Map<String, Set<MoveData>> availableMoves(@RequestParam(value = "gameID") String gameID) {
-        return gameList.get(gameList.indexOf(new Game(gameID))).availableMoves();
+        return gameMap.get(gameID).availableMoves();
     }
-
 }

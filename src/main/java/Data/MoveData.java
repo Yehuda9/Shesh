@@ -5,13 +5,13 @@ import java.io.Serializable;
 public class MoveData implements Serializable {
     private String from;
     private int to;
-    private Player player;
+    private String playerID;
     private boolean isEat;
 
-    public MoveData(String from, int to, Player player) {
+    public MoveData(String from, int to, String playerID) {
         this.from = from;
         this.to = to;
-        this.player = player;
+        this.playerID = playerID;
     }
 
     MoveData() {
@@ -26,8 +26,8 @@ public class MoveData implements Serializable {
         this.from = from;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void setPlayerID(String playerID) {
+        this.playerID = playerID;
     }
 
     public void setTo(int to) {
@@ -38,8 +38,8 @@ public class MoveData implements Serializable {
         return isEat;
     }
 
-    public Player getPlayer() {
-        return player;
+    public String getPlayerID() {
+        return playerID;
     }
 
     public int getTo() {
@@ -52,6 +52,6 @@ public class MoveData implements Serializable {
 
     @Override
     public String toString() {
-        return "MoveData{" + "from='" + from + '\'' + ", to=" + to + ", player=" + player + '}';
+        return "MoveData{" + "from='" + from + '\'' + ", to=" + to + ", player=" + playerID + '}';
     }
 }
